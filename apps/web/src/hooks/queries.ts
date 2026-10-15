@@ -13,6 +13,8 @@ import type {
   Settings,
   Task,
   UsageReport,
+  McpServer,
+  Skill,
 } from "@talorys/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../lib/api";
@@ -34,6 +36,8 @@ export const keys = {
   sessions: ["sessions"] as const,
   system: ["system"] as const,
   update: ["system", "update"] as const,
+  mcpServers: ["mcp", "servers"] as const,
+  skills: ["skills"] as const,
 };
 
 export function useSettings() {
@@ -161,6 +165,20 @@ export interface UpdateStatus {
 /** Whether a newer release is published. The server caches the lookup for a day. */
 export function useUpdateStatus() {
   return useQuery({ queryKey: keys.update, queryFn: () => api<UpdateStatus>("/system/update"), staleTime: 60 * 60_000, retry: false });
+}
+
+export function useMcpServers() {
+  return useQuery({
+    queryKey: keys.mcpServers,
+    queryFn: () => api<{ servers: McpServer[] }>("/mcp/servers").then((r) => r.servers),
+  });
+}
+
+export function useSkills() {
+  return useQuery({
+    queryKey: keys.skills,
+    queryFn: () => api<{ skills: Skill[] }>("/skills").then((r) => r.skills),
+  });
 }
 
 /**

@@ -1,0 +1,5 @@
+{
+  "name": "Talorys",
+  "description": "Your personal AI assistant, in your own cloud. Remembers what matters, organizes your life, and helps you get things done.",
+  "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

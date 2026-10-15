@@ -30,8 +30,13 @@ console.log("• Building frontend");
 npm(["run", "build", "-w", "@talorys/web"]);
 
 console.log("• Bundling agent Worker");
+const wranglerPath = [
+  join(root, "node_modules/wrangler/bin/wrangler.js"),
+  join(root, "apps/agent/node_modules/wrangler/bin/wrangler.js"),
+  join(root, "apps/web/node_modules/wrangler/bin/wrangler.js"),
+].find((p) => existsSync(p)) ?? join(root, "node_modules/wrangler/bin/wrangler.js");
 const bundleDir = mkdtempSync(join(tmpdir(), "talorys-agent-"));
-run(process.execPath, [join(root, "node_modules/wrangler/bin/wrangler.js"), "deploy", "--dry-run", "--outdir", bundleDir, "--config", "wrangler.jsonc"], join(root, "apps/agent"));
+run(process.execPath, [wranglerPath, "deploy", "--dry-run", "--outdir", bundleDir, "--config", "wrangler.jsonc"], join(root, "apps/agent"));
 
 rmSync(out, { recursive: true, force: true });
 mkdirSync(join(out, "agent"), { recursive: true });

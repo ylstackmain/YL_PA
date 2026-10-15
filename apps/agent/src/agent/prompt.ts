@@ -44,6 +44,8 @@ export interface PromptContext {
   scheduled?: boolean;
   /** The finished section of tasks, notes and automations that may relate to the message; none when unset or empty. */
   items?: string;
+  /** Active specialized skills matched for this turn. */
+  skills?: string | null;
 }
 
 export function buildSystemPrompt(ctx: PromptContext): string {
@@ -73,6 +75,7 @@ export function buildSystemPrompt(ctx: PromptContext): string {
     );
   }
   if (ctx.items) sections.push(ctx.items);
+  if (ctx.skills) sections.push(ctx.skills);
   if (ctx.conversationSummary) {
     sections.push(`Summary of earlier parts of this conversation:\n${ctx.conversationSummary}`);
   }

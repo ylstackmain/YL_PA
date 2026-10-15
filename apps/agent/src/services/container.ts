@@ -13,6 +13,10 @@ import { AutomationService, type Scheduler } from "../agent/scheduling";
 import { MemoryHistoryService, type MemoryHistoryHooks } from "../memory";
 import { PushSubscriptionRepository } from "../push/repository";
 import { PushService } from "../push/service";
+import { McpRepository } from "../db/repositories/mcp";
+import { McpClientManager } from "../mcp/manager";
+import { SkillRepository } from "../db/repositories/skills";
+import { SkillService } from "../skills/service";
 
 /** All data services for the single owner, bound to one Durable Object's storage. */
 export interface Services {
@@ -32,6 +36,10 @@ export interface Services {
   automations: AutomationService;
   memoryHistory: MemoryHistoryService;
   push: PushService;
+  mcpRepo: McpRepository;
+  mcp: McpClientManager;
+  skillsRepo: SkillRepository;
+  skills: SkillService;
 }
 
 /** `background` keeps work alive after the request or alarm that started it (the Durable Object's waitUntil). */
@@ -74,5 +82,9 @@ export function createServices(
     automations: new AutomationService(automationsRepo, settings, activity, scheduler),
     memoryHistory: new MemoryHistoryService(db, memories, settings, usage, activity, memoryHooks),
     push,
+    mcpRepo: new McpRepository(db),
+    mcp: new McpClientManager(new McpRepository(db)),
+    skillsRepo: new SkillRepository(db),
+    skills: new SkillService(new SkillRepository(db)),
   };
 }

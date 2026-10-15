@@ -159,3 +159,19 @@ No KV/D1/R2/Vectorize/Workflows. One Durable Object holds everything. Static
 assets are served without invoking Functions (Pages routes only `/api/*` to the
 function). Reminders and digests are deterministic. Chat context is bounded and
 summarized only after enough history overflows.
+
+## Remote MCP (Model Context Protocol) & Dynamic Skills
+
+Talorys supports extensible remote tool execution and dynamic behavioral guidance:
+
+### Remote MCP Clients
+- **Transports**: Streamable HTTP and Server-Sent Events (SSE) via `@modelcontextprotocol/client`.
+- **Registration**: Remote servers are saved to `tal_mcp_servers` in SQLite.
+- **Tool Discovery & Sync**: `POST /api/mcp/servers/:id/sync` fetches remote tool definitions, caching them in `tal_mcp_tools`.
+- **Safety**: Tools can be flagged with `requires_approval`. Approved actions flow through Talorys's existing `ApprovalCard` interactive approval workflow before remote execution.
+
+### Dynamic Skills (`SKILL.md`)
+- **Parser**: Parses standard YAML frontmatter (`name`, `slug`, `description`, `triggers`) and Markdown instructions.
+- **Storage**: Stored in `tal_skills` in the owner's SQLite database.
+- **On-Demand Resolution**: Prompts are matched against skill triggers, injecting only relevant instructions into the agent's context without bloating the base system prompt.
+

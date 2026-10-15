@@ -282,6 +282,45 @@ export const MIGRATIONS: Migration[] = [
       // Existing tal_usage_daily token columns stay untouched: provenance/model are unknown.
     },
   },
+  {
+    version: 8,
+    name: "mcp servers, tools, and dynamic skills",
+    statements: [
+      `CREATE TABLE IF NOT EXISTS tal_mcp_servers (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        endpoint TEXT NOT NULL,
+        transport TEXT NOT NULL CHECK (transport IN ('http', 'sse')),
+        auth_header TEXT,
+        enabled INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )`,
+      `CREATE TABLE IF NOT EXISTS tal_mcp_tools (
+        id TEXT PRIMARY KEY,
+        server_id TEXT NOT NULL REFERENCES tal_mcp_servers(id) ON DELETE CASCADE,
+        name TEXT NOT NULL,
+        description TEXT NOT NULL DEFAULT '',
+        schema_json TEXT NOT NULL DEFAULT '{}',
+        requires_approval INTEGER NOT NULL DEFAULT 0,
+        enabled INTEGER NOT NULL DEFAULT 1,
+        last_synced TEXT NOT NULL
+      )`,
+      `CREATE INDEX IF NOT EXISTS tal_mcp_tools_server ON tal_mcp_tools(server_id)`,
+      `CREATE TABLE IF NOT EXISTS tal_skills (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        slug TEXT UNIQUE NOT NULL,
+        description TEXT NOT NULL DEFAULT '',
+        markdown_content TEXT NOT NULL,
+        frontmatter_json TEXT NOT NULL DEFAULT '{}',
+        triggers_json TEXT NOT NULL DEFAULT '[]',
+        enabled INTEGER NOT NULL DEFAULT 1,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )`,
+    ],
+  },
 ];
 
 export const LATEST_SCHEMA_VERSION = MIGRATIONS[MIGRATIONS.length - 1]!.version;

@@ -10,6 +10,8 @@ import { automationRoutes } from "./routes/automations";
 import { systemRoutes } from "./routes/system";
 import { semanticRoutes } from "../semantic/routes";
 import { pushRoutes } from "../push/routes";
+import { mcpRoutes } from "./routes/mcp";
+import { skillRoutes } from "./routes/skills";
 
 export interface AppEnv {
   Bindings: { agent: TalorysAgent; env: Env };
@@ -38,6 +40,8 @@ export function createApi() {
   app.route("/", dataRoutes);
   app.route("/", automationRoutes);
   app.route("/", pushRoutes);
+  app.route("/", mcpRoutes);
+  app.route("/", skillRoutes);
 
   return app;
 }

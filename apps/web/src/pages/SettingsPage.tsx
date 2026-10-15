@@ -6,6 +6,7 @@ import { Download, ExternalLink, LogOut, Monitor, Moon, Sun, Upload } from "luci
 import { Badge, Button, Card, ConfirmDialog, ErrorNotice, Input, Label, PageHeader, Select, Spinner, Switch } from "../components/ui";
 import { SemanticRecallCard } from "../components/SemanticRecallCard";
 import { PushNotificationsCard } from "../components/PushNotificationsCard";
+import { McpSkillsCard } from "../components/McpSkillsCard";
 import { UsageBreakdown, UsagePricingNote } from "../components/UsageBreakdown";
 import { keys, useApiMutation, useSessions, useSettings, useSystemInfo, useUpdateStatus, useUsage } from "../hooks/queries";
 import { useSession } from "../hooks/session";
@@ -14,7 +15,7 @@ import { api, ApiError } from "../lib/api";
 import { applyTheme } from "../lib/theme";
 import { cn, relativeTime } from "../lib/utils";
 
-const TABS = ["General", "AI", "Privacy", "Security", "About"] as const;
+const TABS = ["General", "AI", "Integrations", "Privacy", "Security", "About"] as const;
 type Tab = (typeof TABS)[number];
 
 function Row({ label, hint, children }: { label: string; hint?: ReactNode; children: ReactNode }) {
@@ -76,6 +77,7 @@ export default function SettingsPage() {
           {tab === "General" && <GeneralTab settings={settings} />}
           {tab === "General" && <PushNotificationsCard />}
           {tab === "AI" && <AiTab settings={settings} />}
+          {tab === "Integrations" && <McpSkillsCard />}
           {tab === "Privacy" && <PrivacyTab />}
           {tab === "Security" && <SecurityTab />}
           {tab === "About" && <AboutTab settings={settings} />}

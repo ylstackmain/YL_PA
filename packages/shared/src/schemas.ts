@@ -208,6 +208,42 @@ export interface SessionInfo {
   current: boolean;
 }
 
+export interface McpServer {
+  id: string;
+  name: string;
+  endpoint: string;
+  transport: "http" | "sse";
+  auth_header?: string | null;
+  enabled: boolean;
+  tool_count?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface McpTool {
+  id: string;
+  server_id: string;
+  name: string;
+  description: string;
+  schema_json: string;
+  requires_approval: boolean;
+  enabled: boolean;
+  last_synced: string;
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  markdown_content: string;
+  frontmatter_json: string;
+  triggers: string[];
+  enabled: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 // ---------- Input schemas ----------
 
 export const taskCreateSchema = z.object({
@@ -293,6 +329,50 @@ export const automationUpdateSchema = z
     name: shortText(200),
     message: z.string().trim().max(4000),
     schedule: scheduleSpecSchema,
+    enabled: z.boolean(),
+  })
+  .partial();
+
+export const mcpServerCreateSchema = z.object({
+  name: shortText(100),
+  endpoint: z.string().url().max(1000),
+  transport: z.enum(["http", "sse"]).default("http"),
+  auth_header: z.string().max(1000).optional().nullable(),
+  enabled: z.boolean().optional().default(true),
+});
+
+export const mcpServerUpdateSchema = z
+  .object({
+    name: shortText(100),
+    endpoint: z.string().url().max(1000),
+    transport: z.enum(["http", "sse"]),
+    auth_header: z.string().max(1000).nullable(),
+    enabled: z.boolean(),
+  })
+  .partial();
+
+export const mcpToolUpdateSchema = z
+  .object({
+    requires_approval: z.boolean(),
+    enabled: z.boolean(),
+  })
+  .partial();
+
+export const skillCreateSchema = z.object({
+  name: shortText(100),
+  slug: z.string().trim().min(1).max(64).regex(/^[a-z0-9_-]+$/i, "Slug must be alphanumeric, dashes, or underscores"),
+  description: z.string().trim().max(500).optional().default(""),
+  markdown_content: z.string().max(100_000),
+  triggers: z.array(z.string().trim().min(1).max(100)).optional().default([]),
+  enabled: z.boolean().optional().default(true),
+});
+
+export const skillUpdateSchema = z
+  .object({
+    name: shortText(100),
+    description: z.string().trim().max(500),
+    markdown_content: z.string().max(100_000),
+    triggers: z.array(z.string().trim().min(1).max(100)),
     enabled: z.boolean(),
   })
   .partial();

@@ -121,6 +121,7 @@ export class AgentRunner {
         .map(withApprovalOutcomes);
       let summary = conversation.summary;
       let summaryUpto = conversation.summary_upto;
+      const matchedSkills = s.skills.resolveForPrompt(userMessage.content);
       const baseSystem = buildSystemPrompt({
         agentName: settings.agentName,
         timezone: settings.timezone,
@@ -129,6 +130,7 @@ export class AgentRunner {
         memories,
         conversationSummary: summary,
         ...(items ? { items } : {}),
+        skills: matchedSkills,
       });
       const historyBudget = Math.max(500, limits.maxContextTokens - estimateTokens(baseSystem) - 600);
       let window = buildContextWindow(history, historyBudget, summaryUpto);
@@ -166,11 +168,14 @@ export class AgentRunner {
             memories,
             conversationSummary: summary,
             ...(items ? { items } : {}),
+            skills: matchedSkills,
           });
 
       // 3. Tools with per-turn limits.
+      const mcpTools = s.mcp.getToolDefinitions();
+      const allTools = [...(this.ext?.tools ?? ALL_TOOLS), ...mcpTools];
       const executor = new ToolExecutor(
-        this.ext?.tools ?? ALL_TOOLS,
+        allTools,
         { services: s, timezone: settings.timezone, mode: "chat", conversationId: conversation.id },
         { maxToolCalls: limits.maxToolCalls },
       );
